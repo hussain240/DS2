@@ -10,15 +10,13 @@ class NodeFind{
 public:
     T value;
     int key;
-    std::shared_ptr<NodeFather<T>>father;
-};
-template<class T>
-class NodeFather{
-public:
-    T value;
-    int key;
     int size;
+    std::shared_ptr<NodeFind<T>>next;
+    std::shared_ptr<NodeFind<T>>father;
+    NodeFind()=default;
+    NodeFind(T value,int key);
 };
+
 template<class T>
 class UnionFind{
     int fullSize;
@@ -27,4 +25,12 @@ class UnionFind{
 public:
 
 };
+template<class T>
+NodeFind<T>::NodeFind(T value, int key) {
+    this->value=value;
+    this->key=key;
+    this->size=0;
+    this->next= nullptr;
+    this->father=this;
+}
 #endif //DS2_UNIONFIND_H
