@@ -4,10 +4,10 @@
 
 #ifndef DS1_PAIR_H
 #define DS1_PAIR_H
-
+template<class T>
 class pair {
     int key;
-    int id;
+    T value
 public:
     pair(int key, int id);
     pair() = default;
