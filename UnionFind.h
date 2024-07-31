@@ -152,7 +152,7 @@ void UnionFind<T>::makeSet(int key,T value) {
 template<class T>
 NodeHash<T> *UnionFind<T>::find(int key) const {
     //////////need to correct the father in the find path and return the set key
-    NodeHash<T>* start=this->values[key];
+
 
 }
 template<class T>
