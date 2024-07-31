@@ -57,12 +57,6 @@ NodeHash<T>::NodeHash(int key,T value) {
     this->next= nullptr;
 }
 
-/////////////pair implementation
-template<class T>
-pair<T>::pair(NodeHash<T>*father, T value) {
-    this->father=father;
-    this->value=value;
-}
 
 
 ////////hashTable implementation
@@ -152,8 +146,24 @@ void UnionFind<T>::makeSet(int key,T value) {
 template<class T>
 NodeHash<T> *UnionFind<T>::find(int key) const {
     //////////need to correct the father in the find path and return the set key
-
-
+    NodeHash<T>* findFather= this->values[key];
+    if(findFather== nullptr)
+    {
+        return nullptr;
+    }
+    NodeHash<T>* start2=findFather;
+    NodeHash<T>* tmp=findFather;
+    while (findFather->father!=findFather)
+    {
+        findFather=findFather->father;
+    }
+    while(start2->father!=start2)
+    {
+        tmp=start2->father;
+        start2->father=start;
+        start2=tmp;
+    }
+    return findFather;
 }
 template<class T>
 void UnionFind<T>::Union(int key1, int key2) {
