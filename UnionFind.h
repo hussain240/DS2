@@ -4,52 +4,65 @@
 
 #ifndef DS2_UNIONFIND_H
 #define DS2_UNIONFIND_H
-
 #define STARTSIZE 1000
 template<class T>
-class NodeFind{
+class NodeHash{
 public:
     T value;
-    int size;
     int key;
-    NodeFind<T>* next;
-    NodeFind<T>* father;
-    NodeFind()=default;
-    NodeFind(T value);
+    int size;
+    NodeHash<T>* next;
+    NodeHash<T>* father;
+    NodeHash()=default;
+    NodeHash(int key,T value);
 };
+
+
+
+
 template<class T>
 class hashTable{
     int fullSize;
     int size;
-    NodeFind<T>* *arr;
+    NodeHash<T>* *arr;
     int hash(int key)const;
 public:
     hashTable();
-    void insert(int key,T vlaue);
+    virtual void insert(int key,T vlaue);
     void resize();
-    NodeFind<T>* operator[](int key);
+    NodeHash<T>* operator[](int key);
 
 };
+
+
 template<class T>
 class UnionFind{
     hashTable<T> values;
     hashTable<T> lists;
 
 public:
+    void makeSet(int key,T value);
+    NodeHash<T>* find(int key)const;
+    void Union(int key1,int key2);
 
 };
 
-///////NodeFind implementation
+///////NodeHash implementation
 template<class T>
-NodeFind<T>::NodeFind(T value, int key) {
+NodeHash<T>::NodeHash(int key,T value) {
     this->value=value;
-    this->size=1;
     this->key=key;
+    this->size=1;
+    this->father= this;
     this->next= nullptr;
-    this->father=this;
 }
 
-
+/////////////pair implementation
+template<class T>
+pair<T>::pair(NodeHash<T>*father, T value) {
+    this->father=father;
+    this->value=value;
+}
 
 
 ////////hashTable implementation
@@ -67,13 +80,13 @@ template<class T>
 void hashTable<T>::insert(int key,T value) {
     if(this->arr== nullptr)
     {
-        this->arr=new NodeFind<T>*[STARTSIZE];
+        this->arr=new NodeHash<T>*[STARTSIZE];
         for(int i=0;i<STARTSIZE;i++)
         {
             this->arr[i]= nullptr;
         }
     }
-    NodeFind<T>*toInsert=new NodeFind<T>(key,NodeFind<T>(value));
+    NodeHash<T>*toInsert=new NodeHash<T>(key,value);
     if(this->arr[hash(key)]== nullptr)
     {
         this->arr[hash(key)]=toInsert;
@@ -85,19 +98,19 @@ void hashTable<T>::insert(int key,T value) {
 template<class T>
 void hashTable<T>::resize() {
     this->fullSize*=2;
-    NodeFind<T>* *newArr = new NodeFind<T>*[this->fullSize];
+    NodeHash<T>* *newArr = new NodeHash<T>*[this->fullSize];
     for(int i=0;i<this->fullSize;i++)
     {
         newArr[i]= nullptr;
     }
     for(int i=0;i<this->fullSize/2;i++)
     {
-        NodeFind<T>*transfer= this->arr[i];
-        while(transfer.value!= nullptr)
+        NodeHash<T>*transfer= this->arr[i];
+        while(transfer!= nullptr)
         {
             if(newArr[hash(transfer.key)]== nullptr)
             {
-                newArr[hash(transfer.key)]=toInsert;
+                newArr[hash(transfer.key)]=transfer;
 
             }
             else {
@@ -112,9 +125,9 @@ void hashTable<T>::resize() {
 
 }
 template<class T>
-NodeFind<T> *hashTable<T>::operator[](int key) {
+NodeHash<T> *hashTable<T>::operator[](int key) {
 
-        NodeFind<T>*transfer= this->arr[hash(key)];
+    NodeHash<T>*transfer= this->arr[hash(key)];
         while(transfer!= nullptr)
         {
             if(transfer->key==key)
@@ -125,5 +138,28 @@ NodeFind<T> *hashTable<T>::operator[](int key) {
         }
     return nullptr;
 
+}
+
+
+
+
+////////////////UnionFind implementation
+template<class T>
+void UnionFind<T>::makeSet(int key,T value) {
+    this->values.insert(key,value);
+    this->lists.insert(key,value);
+}
+template<class T>
+NodeHash<T> *UnionFind<T>::find(int key) const {
+    //////////need to correct the father in the find path and return the set key
+    NodeHash<T>* start=this->values[key];
+
+}
+template<class T>
+void UnionFind<T>::Union(int key1, int key2) {
+    if(key1>key2)
+    {
+
+    }
 }
 #endif //DS2_UNIONFIND_H

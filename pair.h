@@ -7,7 +7,7 @@
 template<class T>
 class pair {
 public:
-    int key;
+    ;
     T value;
     pair(int key, T value);
     pair() = default;
