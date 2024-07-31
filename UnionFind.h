@@ -4,35 +4,36 @@
 
 #ifndef DS2_UNIONFIND_H
 #define DS2_UNIONFIND_H
-#include <memory>
-#include "pair.h"
+
 #define STARTSIZE 1000
 template<class T>
 class NodeFind{
 public:
     T value;
-    int key;
     int size;
-    std::shared_ptr<NodeFind<T>>next;
-    std::shared_ptr<NodeFind<T>>father;
+    int key;
+    NodeFind<T>* next;
+    NodeFind<T>* father;
     NodeFind()=default;
-    NodeFind(T value,int key);
+    NodeFind(T value);
 };
 template<class T>
 class hashTable{
     int fullSize;
     int size;
-    pair<T> *arr;
+    NodeFind<T>* *arr;
     int hash(int key)const;
 public:
     hashTable();
     void insert(int key,T vlaue);
     void resize();
+    NodeFind<T>* operator[](int key);
 
 };
 template<class T>
 class UnionFind{
-    hashTable<T>hashed;
+    hashTable<T> values;
+    hashTable<T> lists;
 
 public:
 
@@ -42,8 +43,8 @@ public:
 template<class T>
 NodeFind<T>::NodeFind(T value, int key) {
     this->value=value;
+    this->size=1;
     this->key=key;
-    this->size=0;
     this->next= nullptr;
     this->father=this;
 }
@@ -56,7 +57,7 @@ template<class T>
 hashTable<T>::hashTable() {
     this->fullSize=STARTSIZE;
     this->size=0;
-    this->arr=new pair<T>*[STARTSIZE];
+    this->arr= nullptr;
 }
 template<class T>
 int hashTable<T>::hash(int key) const {
@@ -64,7 +65,15 @@ int hashTable<T>::hash(int key) const {
 }
 template<class T>
 void hashTable<T>::insert(int key,T value) {
-    pair<T>toInsert=pair<T>(key,value);
+    if(this->arr== nullptr)
+    {
+        this->arr=new NodeFind<T>*[STARTSIZE];
+        for(int i=0;i<STARTSIZE;i++)
+        {
+            this->arr[i]= nullptr;
+        }
+    }
+    NodeFind<T>*toInsert=new NodeFind<T>(key,NodeFind<T>(value));
     if(this->arr[hash(key)]== nullptr)
     {
         this->arr[hash(key)]=toInsert;
@@ -75,7 +84,46 @@ void hashTable<T>::insert(int key,T value) {
 }
 template<class T>
 void hashTable<T>::resize() {
-    hashTable<T>newHash;
+    this->fullSize*=2;
+    NodeFind<T>* *newArr = new NodeFind<T>*[this->fullSize];
+    for(int i=0;i<this->fullSize;i++)
+    {
+        newArr[i]= nullptr;
+    }
+    for(int i=0;i<this->fullSize/2;i++)
+    {
+        NodeFind<T>*transfer= this->arr[i];
+        while(transfer.value!= nullptr)
+        {
+            if(newArr[hash(transfer.key)]== nullptr)
+            {
+                newArr[hash(transfer.key)]=toInsert;
+
+            }
+            else {
+                transfer.next = newArr[hash(transfer.key)];
+                newArr[hash(transfer.key)] = toInsert;
+            }
+            transfer= transfer->value.next;
+        }
+    }
+    delete[] this->arr;
+    this->arr=newArr;
+
+}
+template<class T>
+NodeFind<T> *hashTable<T>::operator[](int key) {
+
+        NodeFind<T>*transfer= this->arr[hash(key)];
+        while(transfer!= nullptr)
+        {
+            if(transfer->key==key)
+            {
+                return transfer;
+            }
+            transfer= transfer->value.next;
+        }
+    return nullptr;
 
 }
 #endif //DS2_UNIONFIND_H
