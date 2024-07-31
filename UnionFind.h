@@ -5,6 +5,7 @@
 #ifndef DS2_UNIONFIND_H
 #define DS2_UNIONFIND_H
 #include <memory>
+#include "pair.h"
 #define STARTSIZE 1000
 template<class T>
 class NodeFind{
@@ -21,7 +22,7 @@ template<class T>
 class hashTable{
     int fullSize;
     int size;
-    T *arr;
+    pair<T> *arr;
     int hash(int key)const;
 public:
     hashTable();
@@ -55,7 +56,7 @@ template<class T>
 hashTable<T>::hashTable() {
     this->fullSize=STARTSIZE;
     this->size=0;
-    this->arr=new NodeFind<T>*[STARTSIZE];
+    this->arr=new pair<T>*[STARTSIZE];
 }
 template<class T>
 int hashTable<T>::hash(int key) const {
@@ -63,7 +64,7 @@ int hashTable<T>::hash(int key) const {
 }
 template<class T>
 void hashTable<T>::insert(int key,T value) {
-
+    pair<T>toInsert=pair<T>(key,value);
     if(this->arr[hash(key)]== nullptr)
     {
         this->arr[hash(key)]=toInsert;
@@ -74,7 +75,7 @@ void hashTable<T>::insert(int key,T value) {
 }
 template<class T>
 void hashTable<T>::resize() {
-    this->fullSize*=2;
-    =new NodeFind<T>*[STARTSIZE];
+    hashTable<T>newHash;
+
 }
 #endif //DS2_UNIONFIND_H
