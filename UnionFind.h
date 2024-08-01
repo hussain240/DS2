@@ -28,9 +28,10 @@ class hashTable{
     int hash(int key)const;
 public:
     hashTable();
+    ~hashTable();
     virtual void insert(int key,T vlaue);
     void resize();
-    NodeHash<T>* operator[](int key);
+    NodeHash<T>* operator[](int key)const;
     void makeNull(NodeHash<T>* toRemove);
 
 };
@@ -42,6 +43,8 @@ class UnionFind{
     hashTable<T> lists;
 
 public:
+    UnionFind()=default;
+    ~UnionFind()=default;
     void makeSet(int key,T value);
     NodeHash<T>* find(int key)const;
     void Union(int key1,int key2);
@@ -68,12 +71,29 @@ hashTable<T>::hashTable() {
     this->arr= nullptr;
 }
 template<class T>
+hashTable<T>::~hashTable() {
+    for (int i = 0; i < fullSize; i++) {
+        NodeHash<T>* current = arr[i];
+        while (current != nullptr) {
+            NodeHash<T>* toDelete = current;
+            current = current->next;
+            delete toDelete;
+        }
+    }
+    delete[] arr;
+}
+template<class T>
 int hashTable<T>::hash(int key) const {
     return key % this->fullSize;
 }
 template<class T>
 void hashTable<T>::insert(int key,T value) {
     ////////need to do resize when full
+    this->size++;
+    if(this->size== this->fullSize)
+    {
+        this->resize();
+    }
     if(this->arr== nullptr)
     {
         this->arr=new NodeHash<T>*[STARTSIZE];
@@ -93,35 +113,28 @@ void hashTable<T>::insert(int key,T value) {
 }
 template<class T>
 void hashTable<T>::resize() {
-    this->fullSize*=2;
-    NodeHash<T>* *newArr = new NodeHash<T>*[this->fullSize];
-    for(int i=0;i<this->fullSize;i++)
-    {
-        newArr[i]= nullptr;
+    int oldSize = this->fullSize;
+    this->fullSize *= 2;
+    NodeHash<T>** newArr = new NodeHash<T>*[this->fullSize];
+    for (int i = 0; i < this->fullSize; i++) {
+        newArr[i] = nullptr;
     }
-    for(int i=0;i<this->fullSize/2;i++)
-    {
-        NodeHash<T>*transfer= this->arr[i];
-        while(transfer!= nullptr)
-        {
-            if(newArr[hash(transfer->key)]== nullptr)
-            {
-                newArr[hash(transfer->key)]=transfer;
-
-            }
-            else {
-                transfer->next = newArr[hash(transfer->key)];
-                newArr[hash(transfer->key)] = transfer;
-            }
-            transfer= transfer->next;
+    for (int i = 0; i < oldSize; i++) {
+        NodeHash<T>* transfer = this->arr[i];
+        while (transfer != nullptr) {
+            NodeHash<T>* next = transfer->next;
+            int newIndex = hash(transfer->key);
+            transfer->next = newArr[newIndex];
+            newArr[newIndex] = transfer;
+            transfer = next;
         }
     }
     delete[] this->arr;
-    this->arr=newArr;
+    this->arr = newArr;
 
 }
 template<class T>
-NodeHash<T> *hashTable<T>::operator[](int key) {
+NodeHash<T> *hashTable<T>::operator[](int key) const{
 
     NodeHash<T>*transfer= this->arr[hash(key)];
     while(transfer!= nullptr)
@@ -154,6 +167,7 @@ void hashTable<T>::makeNull(NodeHash<T> *toRemove) {
         }
         firstInList=firstInList->next;
     }
+    this->size--;
 }
 
 
