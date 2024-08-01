@@ -113,7 +113,7 @@ void hashTable<T>::resize() {
                 transfer->next = newArr[hash(transfer->key)];
                 newArr[hash(transfer->key)] = transfer;
             }
-            transfer= transfer->value.next;
+            transfer= transfer->next;
         }
     }
     delete[] this->arr;
@@ -130,7 +130,7 @@ NodeHash<T> *hashTable<T>::operator[](int key) {
         {
             return transfer;
         }
-        transfer= transfer->value.next;
+        transfer= transfer->next;
     }
     return nullptr;
 
