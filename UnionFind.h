@@ -86,7 +86,7 @@ void hashTable<T>::insert(int key,T value) {
         this->arr[hash(key)]=toInsert;
         return;
     }
-    toInsert.next=this->arr[hash(key)];
+    toInsert->next=this->arr[hash(key)];
     this->arr[hash(key)]=toInsert;
 }
 template<class T>
@@ -102,14 +102,14 @@ void hashTable<T>::resize() {
         NodeHash<T>*transfer= this->arr[i];
         while(transfer!= nullptr)
         {
-            if(newArr[hash(transfer.key)]== nullptr)
+            if(newArr[hash(transfer->key)]== nullptr)
             {
-                newArr[hash(transfer.key)]=transfer;
+                newArr[hash(transfer->key)]=transfer;
 
             }
             else {
-                transfer.next = newArr[hash(transfer.key)];
-                newArr[hash(transfer.key)] = toInsert;
+                transfer->next = newArr[hash(transfer->key)];
+                newArr[hash(transfer->key)] = transfer;
             }
             transfer= transfer->value.next;
         }
@@ -122,14 +122,14 @@ template<class T>
 NodeHash<T> *hashTable<T>::operator[](int key) {
 
     NodeHash<T>*transfer= this->arr[hash(key)];
-        while(transfer!= nullptr)
+    while(transfer!= nullptr)
+    {
+        if(transfer->key==key)
         {
-            if(transfer->key==key)
-            {
-                return transfer;
-            }
-            transfer= transfer->value.next;
+            return transfer;
         }
+        transfer= transfer->value.next;
+    }
     return nullptr;
 
 }
@@ -160,7 +160,7 @@ NodeHash<T> *UnionFind<T>::find(int key) const {
     while(start2->father!=start2)
     {
         tmp=start2->father;
-        start2->father=start;
+        start2->father=findFather;
         start2=tmp;
     }
     return findFather;
