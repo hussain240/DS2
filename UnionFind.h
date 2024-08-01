@@ -31,6 +31,7 @@ public:
     virtual void insert(int key,T vlaue);
     void resize();
     NodeHash<T>* operator[](int key);
+    void makeNull(NodeHash<T>* toRemove);
 
 };
 
@@ -72,6 +73,7 @@ int hashTable<T>::hash(int key) const {
 }
 template<class T>
 void hashTable<T>::insert(int key,T value) {
+    ////////need to do resize when full
     if(this->arr== nullptr)
     {
         this->arr=new NodeHash<T>*[STARTSIZE];
@@ -133,6 +135,26 @@ NodeHash<T> *hashTable<T>::operator[](int key) {
     return nullptr;
 
 }
+template<class T>
+void hashTable<T>::makeNull(NodeHash<T> *toRemove) {
+    NodeHash<T>* firstInList=this->arr[toRemove->key];
+    if(firstInList== nullptr)
+    {
+        return;
+    }
+    if(firstInList==toRemove)
+    {
+        this->arr[toRemove->key]=firstInList->next;
+    }
+    while(firstInList!=toRemove && firstInList!= nullptr)
+    {
+        if(firstInList->next==toRemove)
+        {
+            firstInList->next=toRemove->next;
+        }
+        firstInList=firstInList->next;
+    }
+}
 
 
 
@@ -167,9 +189,22 @@ NodeHash<T> *UnionFind<T>::find(int key) const {
 }
 template<class T>
 void UnionFind<T>::Union(int key1, int key2) {
-    if(key1>key2)
+    NodeHash<T>* list1=this->lists[key1];
+    NodeHash<T>* list2=this->lists[key2];
+    if(list1== nullptr||list2== nullptr)
     {
-
+        return;
+    }
+    if(list1->size>list2->size)
+    {
+        list1->size+=list2->size;
+        list2->father=list1;
+        this->lists.makeNull(list2);
+    }
+    else{
+        list2->size+=list1->size;
+        list1->father=list2;
+        this->lists.makeNull(list1);
     }
 }
 #endif //DS2_UNIONFIND_H
