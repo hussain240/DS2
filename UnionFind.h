@@ -29,11 +29,22 @@ class hashTable{
 public:
     hashTable();
     ~hashTable();
-    virtual void insert(int key,T vlaue);
+    NodeHash<T>* insert(int key,T vlaue);
+    void insertNode(NodeHash<T>* toInsert);
     void resize();
+    void deletearr();
     NodeHash<T>* operator[](int key)const;
     void makeNull(NodeHash<T>* toRemove);
-
+    void print()
+    {
+        for(int i=0;i<this->fullSize;i++)
+        {
+            if(this->arr[i]!= nullptr)
+            {
+                std::cout<< this->arr[i]->key<<std::endl;
+            }
+        }
+    }
 };
 
 
@@ -48,6 +59,10 @@ public:
     void makeSet(int key,T value);
     NodeHash<T>* find(int key)const;
     void Union(int key1,int key2);
+    void print()
+    {
+        this->values.print();
+    }
 
 };
 
@@ -71,23 +86,27 @@ hashTable<T>::hashTable() {
     this->arr= nullptr;
 }
 template<class T>
+void hashTable<T>::deletearr() {
+    delete[] this->arr;
+}
+template<class T>
 hashTable<T>::~hashTable() {
     for (int i = 0; i < fullSize; i++) {
-        NodeHash<T>* current = arr[i];
+        NodeHash<T>* current = this->arr[i];
         while (current != nullptr) {
             NodeHash<T>* toDelete = current;
             current = current->next;
             delete toDelete;
         }
     }
-    delete[] arr;
+    delete[] this->arr;
 }
 template<class T>
 int hashTable<T>::hash(int key) const {
     return key % this->fullSize;
 }
 template<class T>
-void hashTable<T>::insert(int key,T value) {
+NodeHash<T>* hashTable<T>::insert(int key,T value) {
     ////////need to do resize when full
     this->size++;
     if(this->size== this->fullSize)
@@ -106,10 +125,34 @@ void hashTable<T>::insert(int key,T value) {
     if(this->arr[hash(key)]== nullptr)
     {
         this->arr[hash(key)]=toInsert;
-        return;
+        return toInsert;
     }
     toInsert->next=this->arr[hash(key)];
     this->arr[hash(key)]=toInsert;
+    return toInsert;
+}
+template<class T>
+void hashTable<T>::insertNode(NodeHash<T> *toInsert) {
+    this->size++;
+    if(this->size== this->fullSize)
+    {
+        this->resize();
+    }
+    if(this->arr== nullptr)
+    {
+        this->arr=new NodeHash<T>*[STARTSIZE];
+        for(int i=0;i<STARTSIZE;i++)
+        {
+            this->arr[i]= nullptr;
+        }
+    }
+    if(this->arr[hash(toInsert->key)]== nullptr)
+    {
+        this->arr[hash(toInsert->key)]=toInsert;
+        return;
+    }
+    toInsert->next=this->arr[hash(toInsert->key)];
+    this->arr[hash(toInsert->key)]=toInsert;
 }
 template<class T>
 void hashTable<T>::resize() {
@@ -134,7 +177,7 @@ void hashTable<T>::resize() {
 
 }
 template<class T>
-NodeHash<T> *hashTable<T>::operator[](int key) const{
+NodeHash<T>* hashTable<T>::operator[](int key) const{
 
     NodeHash<T>*transfer= this->arr[hash(key)];
     while(transfer!= nullptr)
@@ -158,16 +201,18 @@ void hashTable<T>::makeNull(NodeHash<T> *toRemove) {
     if(firstInList==toRemove)
     {
         this->arr[toRemove->key]=firstInList->next;
+        this->size--;
     }
     while(firstInList!=toRemove && firstInList!= nullptr)
     {
         if(firstInList->next==toRemove)
         {
             firstInList->next=toRemove->next;
+            this->size--;
         }
         firstInList=firstInList->next;
     }
-    this->size--;
+
 }
 
 
@@ -176,8 +221,10 @@ void hashTable<T>::makeNull(NodeHash<T> *toRemove) {
 ////////////////UnionFind implementation
 template<class T>
 void UnionFind<T>::makeSet(int key,T value) {
-    this->values.insert(key,value);
-    this->lists.insert(key,value);
+    NodeHash<T>* val=this->values.insert(key,value);
+    this->lists.insertNode(val);
+
+
 }
 template<class T>
 NodeHash<T> *UnionFind<T>::find(int key) const {
@@ -203,22 +250,25 @@ NodeHash<T> *UnionFind<T>::find(int key) const {
 }
 template<class T>
 void UnionFind<T>::Union(int key1, int key2) {
-    NodeHash<T>* list1=this->lists[key1];
-    NodeHash<T>* list2=this->lists[key2];
-    if(list1== nullptr||list2== nullptr)
+    NodeHash<T>* list1= this->lists[key1];
+    NodeHash<T>* list2= this->lists[key2];
+    if(list1== nullptr||list2== nullptr ||list1==list2)
     {
         return;
     }
-    if(list1->size>list2->size)
+    list2=list2->father;
+    list1=list1->father;
+    if(list1->size<list2->size)
     {
-        list1->size+=list2->size;
-        list2->father=list1;
-        this->lists.makeNull(list2);
+        this->lists.makeNull(list1);
+        list2->size=list2->size+list1->size;
+        list1->father=list2;
     }
     else{
-        list2->size+=list1->size;
-        list1->father=list2;
-        this->lists.makeNull(list1);
+        this->lists.makeNull(list2);
+        list1->size=list2->size+list1->size;
+        list2->father=list1;
+
     }
 }
 #endif //DS2_UNIONFIND_H
