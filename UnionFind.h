@@ -61,7 +61,7 @@ public:
     void Union(int key1,int key2);
     void print()
     {
-        this->values.print();
+        this->lists.print();
     }
 
 };
@@ -222,7 +222,10 @@ void hashTable<T>::makeNull(NodeHash<T> *toRemove) {
 template<class T>
 void UnionFind<T>::makeSet(int key,T value) {
     NodeHash<T>* val=this->values.insert(key,value);
-    this->lists.insertNode(val);
+    NodeHash<T>* listInsert=new NodeHash<T>(key,value);
+    listInsert->father=val;
+
+    this->lists.insertNode(listInsert);
 
 
 }
@@ -256,18 +259,22 @@ void UnionFind<T>::Union(int key1, int key2) {
     {
         return;
     }
-    list2=list2->father;
-    list1=list1->father;
+    NodeHash<T>* list2Father=list2->father;
+    NodeHash<T>* list1Father=list1->father;
     if(list1->size<list2->size)
     {
         this->lists.makeNull(list1);
-        list2->size=list2->size+list1->size;
+        list2Father->size=list2Father->size+list1Father->size;
         list1->father=list2;
+        list1Father->father=list2Father;
+
     }
     else{
         this->lists.makeNull(list2);
         list1->size=list2->size+list1->size;
+        list1Father->size=list2Father->size+list1Father->size;
         list2->father=list1;
+        list2Father->father=list1Father;
 
     }
 }
