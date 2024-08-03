@@ -265,6 +265,7 @@ void UnionFind<T>::Union(int key1, int key2) {
     {
         this->lists.makeNull(list1);
         list2Father->size=list2Father->size+list1Father->size;
+        list2->size=list2->size+list1->size;
         list1->father=list2;
         list1Father->father=list2Father;
 
