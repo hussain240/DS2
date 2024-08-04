@@ -29,19 +29,21 @@ class hashTable{
 public:
     hashTable();
     ~hashTable();
-    NodeHash<T>* insert(int key,T vlaue);
+    NodeHash<T>* insert(int key,T value);
     void insertNode(NodeHash<T>* toInsert);
     void resize();
     void deletearr();
     NodeHash<T>* operator[](int key)const;
-    void makeNull(NodeHash<T>* toRemove);
+    NodeHash<T>* makeNull(NodeHash<T>* toRemove);
     void print()
     {
         for(int i=0;i<this->fullSize;i++)
         {
-            if(this->arr[i]!= nullptr)
+            NodeHash<T>*current = this->arr[i];
+            while(current!= nullptr)
             {
-                std::cout<< this->arr[i]->key<<std::endl;
+                std::cout<< current->key<<std::endl;
+                current=current->next;
             }
         }
     }
@@ -121,7 +123,7 @@ NodeHash<T>* hashTable<T>::insert(int key,T value) {
             this->arr[i]= nullptr;
         }
     }
-    NodeHash<T>*toInsert=new NodeHash<T>(key,value);
+    NodeHash<T> *toInsert=new NodeHash<T>(key,value);
     if(this->arr[hash(key)]== nullptr)
     {
         this->arr[hash(key)]=toInsert;
@@ -192,27 +194,32 @@ NodeHash<T>* hashTable<T>::operator[](int key) const{
 
 }
 template<class T>
-void hashTable<T>::makeNull(NodeHash<T> *toRemove) {
-    NodeHash<T>* firstInList=this->arr[toRemove->key];
-    if(firstInList== nullptr)
+NodeHash<T>* hashTable<T>::makeNull(NodeHash<T> *toRemove) {
+    int index = this->hash(toRemove->key);
+    NodeHash<T>* firstInList = this->arr[index];
+    if (firstInList == nullptr)
     {
-        return;
-    }
-    if(firstInList==toRemove)
-    {
-        this->arr[toRemove->key]=firstInList->next;
-        this->size--;
-    }
-    while(firstInList!=toRemove && firstInList!= nullptr)
-    {
-        if(firstInList->next==toRemove)
-        {
-            firstInList->next=toRemove->next;
-            this->size--;
-        }
-        firstInList=firstInList->next;
+        return nullptr;
     }
 
+    if (firstInList == toRemove)
+    {
+        this->arr[index] = firstInList->next;
+        this->size--;
+        return firstInList;
+    }
+    NodeHash<T>* prev = firstInList;
+    while (firstInList != nullptr && firstInList != toRemove)
+    {
+        prev = firstInList;
+        firstInList = firstInList->next;
+    }
+    if (firstInList == toRemove)
+    {
+        prev->next = firstInList->next;
+        this->size--;
+    }
+    return firstInList;
 }
 
 
@@ -253,30 +260,30 @@ NodeHash<T> *UnionFind<T>::find(int key) const {
 }
 template<class T>
 void UnionFind<T>::Union(int key1, int key2) {
-    NodeHash<T>* list1= this->lists[key1];
-    NodeHash<T>* list2= this->lists[key2];
-    if(list1== nullptr||list2== nullptr ||list1==list2)
-    {
+    NodeHash<T> *list1 = this->lists[key1];
+    NodeHash<T> *list2 = this->lists[key2];
+    if (list1 == nullptr || list2 == nullptr || list1 == list2) {
         return;
     }
-    NodeHash<T>* list2Father=list2->father;
-    NodeHash<T>* list1Father=list1->father;
-    if(list1->size<list2->size)
-    {
-        this->lists.makeNull(list1);
-        list2Father->size=list2Father->size+list1Father->size;
-        list2->size=list2->size+list1->size;
-        list1->father=list2;
-        list1Father->father=list2Father;
+    NodeHash<T> *list2Father = list2->father;
+    NodeHash<T> *list1Father = list1->father;
+    if (list1->size < list2->size) {
+        NodeHash<T>* toRemove= this->lists.makeNull(list1);
+        list2Father->size = list2Father->size + list1Father->size;
+        list2->size = list2->size + list1->size;
+        list1->father = list2;
+        list1Father->father = list2Father;
+        delete toRemove;
 
-    }
-    else{
-        this->lists.makeNull(list2);
-        list1->size=list2->size+list1->size;
-        list1Father->size=list2Father->size+list1Father->size;
-        list2->father=list1;
-        list2Father->father=list1Father;
-
+    } else {
+        NodeHash<T>* toRemove= this->lists.makeNull(list2);
+        list1->size = list2->size + list1->size;
+        list1Father->size = list2Father->size + list1Father->size;
+        list2->father = list1;
+        list2Father->father = list1Father;
+        delete toRemove;
     }
 }
+
+
 #endif //DS2_UNIONFIND_H
