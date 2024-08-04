@@ -16,7 +16,7 @@
 #define PIRATESA2_H_
 
 #include "wet2util.h"
-
+#include "Pirate.h"
 class oceans_t {
 private:
 	//
