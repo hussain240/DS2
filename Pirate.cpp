@@ -14,7 +14,7 @@ int pirate::getSalary() const {
     return this->salary;
 }
 
-int pirate::paySalary(int money) {
+void pirate::paySalary(int money) {
     this->salary+=money;
 }
 

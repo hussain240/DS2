@@ -12,7 +12,7 @@ public:
     pirate(int salary,int id,int rank);
     int getRank()const;
     int getSalary()const;
-    int paySalary(int money);
+    void paySalary(int money);
     int getId()const;
     ~pirate()=default;
 };
