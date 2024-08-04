@@ -61,6 +61,7 @@ public:
     void makeSet(int key,T value);
     NodeHash<T>* find(int key)const;
     void Union(int key1,int key2);
+    NodeHash<T>* operator[](int key);
     void print()
     {
         this->lists.print();
@@ -284,6 +285,9 @@ void UnionFind<T>::Union(int key1, int key2) {
         delete toRemove;
     }
 }
-
+template<class T>
+NodeHash<T> *UnionFind<T>::operator[](int key) {
+    return this->values[key];
+}
 
 #endif //DS2_UNIONFIND_H

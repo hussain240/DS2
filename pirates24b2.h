@@ -17,11 +17,16 @@
 
 #include "wet2util.h"
 #include "Pirate.h"
+#include "Fleet.h"
+#include "UnionFind.h"
+#include <memory>
 class oceans_t {
 private:
 	//
 	// Here you may add anything you want
 	//
+    hashTable<std::shared_ptr<pirate>>* pirates;
+    UnionFind<std::shared_ptr<fleet>>* fleets;
 	
 public:
 	// <DO-NOT-MODIFY> {

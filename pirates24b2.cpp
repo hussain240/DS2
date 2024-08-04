@@ -3,17 +3,37 @@
 oceans_t::oceans_t()
 {
 	// TODO: Your code goes here
+    this->pirates=new hashTable<std::shared_ptr<pirate>>();
+    this->fleets=new UnionFind<std::shared_ptr<fleet>>();
 }
 
 oceans_t::~oceans_t()
 {
 	// TODO: Your code goes here
+    delete pirates;
+    delete fleets;
 }
 
 
 StatusType oceans_t::add_fleet(int fleetId)
 {
 	// TODO: Your code goes here
+    try{
+        if(fleetId<=0)
+        {
+            return StatusType::INVALID_INPUT;
+        }
+        if(this->fleets[fleetId]!= nullptr)
+        {
+            return StatusType::FAILURE;
+        }
+        std::shared_ptr<fleet>toInsert(new fleet(fleetId));
+        this->fleets->makeSet(fleetId,toInsert);
+    }
+    catch (const std::bad_alloc& bad)
+    {
+        return StatusType::ALLOCATION_ERROR;
+    }
 	return StatusType::SUCCESS;
 }
 
