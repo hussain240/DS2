@@ -4,7 +4,7 @@ oceans_t::oceans_t()
 {
 	// TODO: Your code goes here
     this->pirates=new hashTable<std::shared_ptr<pirate>>();
-    this->fleets=new UnionFind<std::shared_ptr<fleet>>();
+    this->fleets=new UnionFind();
 }
 
 oceans_t::~oceans_t()
