@@ -46,10 +46,19 @@ StatusType oceans_t::add_pirate(int pirateId, int fleetId)
         {
             return StatusType::INVALID_INPUT;
         }
-        if(this->fleets[fleetId]== nullptr || this->pirates[pirateId]!= nullptr)
+        NodeHash<std::shared_ptr<fleet>>* wantedFleet=this->fleets->find(fleetId);
+        if(wantedFleet== nullptr || this->pirates[pirateId]!= nullptr)
         {
             return StatusType::FAILURE;
         }
+        if(wantedFleet->fatherId!=fleetId)
+        {
+            return StatusType::FAILURE;
+        }
+        ////////////////need to give the pirate the right rank//////////////////////////////
+        std::shared_ptr<pirate>toInsert(new pirate(0,pirateId,-999999));
+        this->pirates->insert(pirateId,toInsert);
+        return StatusType::SUCCESS;
     }
     catch (const std::bad_alloc& bad)
     {
