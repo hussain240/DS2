@@ -46,7 +46,7 @@ StatusType oceans_t::add_pirate(int pirateId, int fleetId)
         {
             return StatusType::INVALID_INPUT;
         }
-        if(this->fleets[fleetId]== nullptr || this->pirates)
+        if(this->fleets[fleetId]== nullptr || this->pirates[pirateId]!= nullptr)
         {
             return StatusType::FAILURE;
         }
