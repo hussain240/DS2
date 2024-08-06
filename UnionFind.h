@@ -61,6 +61,7 @@ public:
     void makeSet(int key,std::shared_ptr<fleet> value);
     NodeHash<std::shared_ptr<fleet>>* find(int key)const;
     void Union(int key1,int key2);
+    NodeHash<std::shared_ptr<fleet>>* operator[](int key)const;
     void print()
     {
         this->values.print();
@@ -173,6 +174,11 @@ NodeHash<T>* hashTable<T>::operator[](int key) const{
 
 ////////////////UnionFind implementation
 
+NodeHash<std::shared_ptr < fleet>> *
+
+UnionFind::operator[](int key) const {
+    return this->values[key];
+}
 void UnionFind::makeSet(int key,std::shared_ptr<fleet> value) {
     this->values.insert(key,value);
 }
@@ -212,24 +218,38 @@ void UnionFind::Union(int key1, int key2) {
     if (list1 == nullptr || list2 == nullptr || list1 == list2) {
         return;
     }
+    int num1=list1->value->getNumOfPirate();
+    int num2=list2->value->getNumOfPirate();
     if (list1->size < list2->size) {
         list2->size = list2->size + list1->size;
         list1->father = list2;
-        list1->fatherId=list2->key;
-        if(list1->value->getNumOfPirate()<list2->value->getNumOfPirate())
+        if(num1<=num2)
         {
-            list2->rank+=list1->size;
-            list1->rank-=list2->rank;
+            list1->fatherId=list2->key;
+            list1->rank+=num2-list2->rank;
         }
         else{
-            list2->rank+=list1->size-list1->rank;
+            list2->fatherId=list1->key;
+            list1->rank+=num2;
+            list2->rank-=list1->rank;
         }
+        list2->value->addNumOfPirate(num1);
     }
     else
     {
         list1->size = list2->size + list1->size;
         list2->father = list1;
-
+        if(num1>=num2)
+        {
+            list2->fatherId=list1->key;
+            list2->rank+=num1-list1->rank;
+        }
+        else{
+            list1->fatherId=list2->key;
+            list2->rank+=num1;
+            list1->rank-=list2->rank;
+        }
+        list1->value->addNumOfPirate(num2);
     }
 }
 

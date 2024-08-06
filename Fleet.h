@@ -16,6 +16,6 @@ public:
     int getNumOfPirate()const;
     int getId()const;
     void addNumOfShip();
-    void addNumOfPirate();
+    void addNumOfPirate(int toAdd);
 };
 #endif //DS2_FLEET_H

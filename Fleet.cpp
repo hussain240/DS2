@@ -22,8 +22,8 @@ int fleet::getNumOfShip() const {
     return this->numOfShip;
 }
 
-void fleet::addNumOfPirate() {
-    this->numOfPirate++;
+void fleet::addNumOfPirate(int toAdd) {
+    this->numOfPirate+=toAdd;
 }
 
 void fleet::addNumOfShip() {
