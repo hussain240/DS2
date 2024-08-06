@@ -29,6 +29,7 @@ StatusType oceans_t::add_fleet(int fleetId)
         }
         std::shared_ptr<fleet>toInsert(new fleet(fleetId));
         this->fleets->makeSet(fleetId,toInsert);
+        return StatusType::SUCCESS;
     }
     catch (const std::bad_alloc& bad)
     {
@@ -166,5 +167,6 @@ StatusType oceans_t::unite_fleets(int fleetId1, int fleetId2)
 StatusType oceans_t::pirate_argument(int pirateId1, int pirateId2)
 {
     // TODO: Your code goes here
+
     return StatusType::SUCCESS;
 }

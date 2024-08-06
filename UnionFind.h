@@ -227,6 +227,11 @@ void UnionFind::Union(int key1, int key2) {
         {
             list1->fatherId=list2->key;
             list1->rank+=num2-list2->rank;
+            if(num1==num2)
+            {
+                list2->fatherId=list1->key;
+                list1->fatherId=list1->key;
+            }
         }
         else{
             list2->fatherId=list1->key;
