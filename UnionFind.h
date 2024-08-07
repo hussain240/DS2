@@ -59,7 +59,8 @@ public:
     UnionFind()=default;
     ~UnionFind()=default;
     void makeSet(int key,std::shared_ptr<fleet> value);
-    NodeHash<std::shared_ptr<fleet>>* find(int key)const;
+    NodeHash<std::shared_ptr<fleet>>* find(int key);
+    int findRank(int key);
     void Union(int key1,int key2);
     NodeHash<std::shared_ptr<fleet>>* operator[](int key)const;
     void print()
@@ -183,7 +184,35 @@ void UnionFind::makeSet(int key,std::shared_ptr<fleet> value) {
     this->values.insert(key,value);
 }
 
-NodeHash<std::shared_ptr<fleet>> *UnionFind::find(int key) const {
+int UnionFind::findRank(int key) {
+    NodeHash<std::shared_ptr<fleet>>* findFather= this->values[key];
+    if(findFather== nullptr)
+    {
+        return 0;
+    }
+    NodeHash<std::shared_ptr<fleet>>* start2=findFather;
+    NodeHash<std::shared_ptr<fleet>>* tmp=findFather;
+    int counRank=0;
+    while (findFather->father!=findFather)
+    {
+        counRank+=findFather->rank;
+        findFather=findFather->father;
+    }
+    int fatherId=findFather->fatherId;
+    int toReturn=counRank;
+    while(start2->father!=start2)
+    {
+        tmp=start2->father;
+        int currentRank=start2->rank;
+        start2->rank=counRank;
+        counRank-=currentRank;
+        start2->father=findFather;
+        start2->fatherId=fatherId;
+        start2=tmp;
+    }
+    return toReturn;
+}
+NodeHash<std::shared_ptr<fleet>> *UnionFind::find(int key) {
     //////////need to correct the father in the find path and return the set key
     NodeHash<std::shared_ptr<fleet>>* findFather= this->values[key];
     if(findFather== nullptr)
@@ -209,7 +238,7 @@ NodeHash<std::shared_ptr<fleet>> *UnionFind::find(int key) const {
         start2->fatherId=fatherId;
         start2=tmp;
     }
-    return this->values[fatherId];
+    return findFather;
 }
 
 void UnionFind::Union(int key1, int key2) {

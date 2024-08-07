@@ -56,8 +56,9 @@ StatusType oceans_t::add_pirate(int pirateId, int fleetId)
             return StatusType::FAILURE;
         }
         ////////////////need to give the pirate the right rank//////////////////////////////
-        std::shared_ptr<pirate>toInsert(new pirate(0,pirateId,-999999));
+        std::shared_ptr<pirate>toInsert(new pirate(0,pirateId,wantedFleet->value->getNumOfPirate()+1-wantedFleet->rank,wantedFleet->key));
         this->pirates->insert(pirateId,toInsert);
+        wantedFleet->value->addNumOfPirate(1);
         return StatusType::SUCCESS;
     }
     catch (const std::bad_alloc& bad)
@@ -145,7 +146,7 @@ StatusType oceans_t::unite_fleets(int fleetId1, int fleetId2)
 {
 	// TODO: Your code goes here
     try{
-        if(fleetId1<=0 || fleetId2<=0)
+        if(fleetId1<=0 || fleetId2<=0 || fleetId1==fleetId2)
         {
             return StatusType::INVALID_INPUT;
         }
@@ -176,6 +177,35 @@ StatusType oceans_t::unite_fleets(int fleetId1, int fleetId2)
 StatusType oceans_t::pirate_argument(int pirateId1, int pirateId2)
 {
     // TODO: Your code goes here
-
+    try{
+        if(pirateId1<=0 || pirateId2<=0 ||pirateId2==pirateId1)
+        {
+            return StatusType::INVALID_INPUT;
+        }
+        NodeHash<std::shared_ptr<pirate>>*pirate1=this->pirates[pirateId1];
+        NodeHash<std::shared_ptr<pirate>>*pirate2=this->pirates[pirateId2];
+        if(pirate1== nullptr || pirate2== nullptr)
+        {
+            return StatusType::FAILURE;
+        }
+        ////////////////////neeed to complete/////////////////
+        int pirate1Rank=this->fleets->findRank(pirate1->value->getFleetId())+pirate1->value->getRank();
+        int pirate2Rank=this->fleets->findRank(pirate2->value->getFleetId())+pirate2->value->getRank();
+        if(pirate1Rank<pirate2Rank)
+        {
+            pirate1->value->paySalary(pirate2Rank-pirate1Rank);
+            pirate2->value->paySalary(pirate1Rank-pirate2Rank);
+        }
+        else
+        {
+            pirate2->value->paySalary(pirate1Rank-pirate2Rank);
+            pirate1->value->paySalary(pirate2Rank-pirate1Rank);
+        }
+        return StatusType::SUCCESS;
+    }
+    catch (const std::bad_alloc& bad)
+    {
+        return StatusType::ALLOCATION_ERROR;
+    }
     return StatusType::SUCCESS;
 }

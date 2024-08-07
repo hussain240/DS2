@@ -8,12 +8,13 @@ class pirate{
     int salary;
     int id;
     int rank;
+    int fleetId;
 public:
-    pirate(int salary,int id,int rank);
+    pirate(int salary,int id,int rank,int fleetId);
     int getRank()const;
     int getSalary()const;
     void paySalary(int money);
-    int getId()const;
+    int getFleetId()const;
     ~pirate()=default;
 };
 

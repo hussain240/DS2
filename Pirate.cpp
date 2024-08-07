@@ -2,7 +2,7 @@
 // Created by hussa on 8/4/2024.
 //
 #include "Pirate.h"
-pirate::pirate(int salary, int id, int rank):salary(salary),id(id),rank(rank) {
+pirate::pirate(int salary, int id, int rank,int fleetId):salary(salary),id(id),rank(rank),fleetId(fleetId) {
 
 }
 
@@ -18,6 +18,6 @@ void pirate::paySalary(int money) {
     this->salary+=money;
 }
 
-int pirate::getId() const {
-    return this->id;
+int pirate::getFleetId() const {
+    return this->fleetId;
 }
