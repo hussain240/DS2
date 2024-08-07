@@ -23,7 +23,7 @@ StatusType oceans_t::add_fleet(int fleetId)
         {
             return StatusType::INVALID_INPUT;
         }
-        if(this->fleets[fleetId]!= nullptr)
+        if(this->fleets->find(fleetId)!= nullptr)
         {
             return StatusType::FAILURE;
         }
@@ -47,7 +47,7 @@ StatusType oceans_t::add_pirate(int pirateId, int fleetId)
             return StatusType::INVALID_INPUT;
         }
         NodeHash<std::shared_ptr<fleet>>* wantedFleet=this->fleets->find(fleetId);
-        if(wantedFleet== nullptr || this->pirates[pirateId]!= nullptr)
+        if(wantedFleet== nullptr || this->pirates->find(pirateId)!= nullptr)
         {
             return StatusType::FAILURE;
         }
@@ -77,11 +77,11 @@ StatusType oceans_t::pay_pirate(int pirateId, int salary)
         {
             return StatusType::INVALID_INPUT;
         }
-        if(this->pirates[pirateId]== nullptr)
+        if(this->pirates->find(pirateId)== nullptr)
         {
             return StatusType::FAILURE;
         }
-        NodeHash<std::shared_ptr<pirate>>* toPay=this->pirates[pirateId];
+        NodeHash<std::shared_ptr<pirate>>* toPay=this->pirates->find(pirateId);
         toPay->value->paySalary(salary);
         return StatusType::SUCCESS;
     }
@@ -127,7 +127,7 @@ output_t<int> oceans_t::get_pirate_money(int pirateId)
         {
             return output_t<int>(StatusType::INVALID_INPUT);
         }
-        NodeHash<std::shared_ptr<pirate>>* toGet=this->pirates[pirateId];
+        NodeHash<std::shared_ptr<pirate>>* toGet=this->pirates->find(pirateId);
         if(toGet== nullptr)
         {
             return output_t<int>(StatusType::FAILURE);
@@ -182,8 +182,8 @@ StatusType oceans_t::pirate_argument(int pirateId1, int pirateId2)
         {
             return StatusType::INVALID_INPUT;
         }
-        NodeHash<std::shared_ptr<pirate>>*pirate1=this->pirates[pirateId1];
-        NodeHash<std::shared_ptr<pirate>>*pirate2=this->pirates[pirateId2];
+        NodeHash<std::shared_ptr<pirate>>*pirate1=this->pirates->find(pirateId1);
+        NodeHash<std::shared_ptr<pirate>>*pirate2=this->pirates->find(pirateId2);
         if(pirate1== nullptr || pirate2== nullptr)
         {
             return StatusType::FAILURE;

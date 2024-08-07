@@ -35,7 +35,7 @@ public:
     ~hashTable();
     void insert(int key,T value);
     void resize();
-    NodeHash<T>* operator[](int key)const;
+    NodeHash<T>* find(int key)const;
     void print()
     {
         for(int i=0;i<this->fullSize;i++)
@@ -43,7 +43,7 @@ public:
             NodeHash<T>*current = this->arr[i];
             while(current!= nullptr)
             {
-                std::cout<< current->fatherId<<std::endl;
+
                 current=current->next;
             }
         }
@@ -62,7 +62,7 @@ public:
     NodeHash<std::shared_ptr<fleet>>* find(int key);
     int findRank(int key);
     void Union(int key1,int key2);
-    NodeHash<std::shared_ptr<fleet>>* operator[](int key)const;
+    NodeHash<std::shared_ptr<fleet>>* findHash(int key)const;
     void print()
     {
         this->values.print();
@@ -155,7 +155,7 @@ void hashTable<T>::resize() {
 
 }
 template<class T>
-NodeHash<T>* hashTable<T>::operator[](int key) const{
+NodeHash<T>* hashTable<T>::find(int key) const{
 
     NodeHash<T>*transfer= this->arr[hash(key)];
     while(transfer!= nullptr)
@@ -177,8 +177,8 @@ NodeHash<T>* hashTable<T>::operator[](int key) const{
 
 NodeHash<std::shared_ptr < fleet>> *
 
-UnionFind::operator[](int key) const {
-    return this->values[key];
+UnionFind::findHash(int key) const {
+    return this->values.find(key);
 }
 void UnionFind::makeSet(int key,std::shared_ptr<fleet> value) {
     this->values.insert(key,value);
