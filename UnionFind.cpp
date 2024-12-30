@@ -1,6 +1,7 @@
 //
 // Created by hussa on 8/7/2024.
 //
+#include "UnionFind.h"
 NodeHash<std::shared_ptr < fleet>> *UnionFind::findHash(int key) const {
     return this->values.find(key);
 }
@@ -9,7 +10,7 @@ void UnionFind::makeSet(int key,std::shared_ptr<fleet> value) {
 }
 
 int UnionFind::findRank(int key) {
-    NodeHash<std::shared_ptr<fleet>>* findFather= this->values.find(key);
+   NodeHash<std::shared_ptr<fleet>>* findFather= this->values.find(key);
     if(findFather== nullptr)
     {
         return 0;
@@ -24,6 +25,7 @@ int UnionFind::findRank(int key) {
     }
     int fatherId=findFather->fatherId;
     int toReturn=counRank;
+    toReturn+=findFather->rank;
     while(start2->father!=start2)
     {
         tmp=start2->father;
@@ -35,10 +37,11 @@ int UnionFind::findRank(int key) {
         start2=tmp;
     }
     return toReturn;
+
 }
 NodeHash<std::shared_ptr<fleet>> *UnionFind::find(int key) {
     //////////need to correct the father in the find path and return the set key
-    NodeHash<std::shared_ptr<fleet>>* findFather= this->values.find(key);
+   NodeHash<std::shared_ptr<fleet>>* findFather= this->values.find(key);
     if(findFather== nullptr)
     {
         return nullptr;
@@ -59,54 +62,87 @@ NodeHash<std::shared_ptr<fleet>> *UnionFind::find(int key) {
         start2->rank=counRank;
         counRank-=currentRank;
         start2->father=findFather;
-        start2->fatherId=fatherId;
+       start2->fatherId=fatherId;
         start2=tmp;
     }
+    
     return findFather;
+
 }
 
-void UnionFind::Union(int key1, int key2) {
-    NodeHash<std::shared_ptr<fleet>> *list1 = this->values.find(key1);
-    NodeHash<std::shared_ptr<fleet>> *list2 = this->values.find(key2);
-    if (list1 == nullptr || list2 == nullptr || list1 == list2) {
-        return;
+int UnionFind::Union(int key1, int key2){
+    NodeHash<std::shared_ptr<fleet>>* fleet1=this->find(key1);
+    NodeHash<std::shared_ptr<fleet>>* fleet2=this->find(key2);
+    if(fleet1==nullptr || fleet2==nullptr || fleet1==fleet2)
+    {
+        return -1;
     }
-    int num1=list1->value->getNumOfPirate();
-    int num2=list2->value->getNumOfPirate();
-    if (list1->size < list2->size) {
-        list2->size = list2->size + list1->size;
-        list1->father = list2;
-        if(num1<=num2)
-        {
-            list1->fatherId=list2->key;
-            list1->rank+=num2-list2->rank;
-            if(num1==num2)
-            {
-                list2->fatherId=list1->key;
-                list1->fatherId=list1->key;
-            }
-        }
-        else{
-            list2->fatherId=list1->key;
-            list1->rank+=num2;
-            list2->rank-=list1->rank;
-        }
-        list2->value->addNumOfPirate(num1);
+    int num1=fleet1->value->getNumOfPirate();
+    int num2=fleet2->value->getNumOfPirate();
+    if(num1>=num2)
+    {
+        fleet2->fatherId=fleet1->fatherId;
     }
     else
     {
-        list1->size = list2->size + list1->size;
-        list2->father = list1;
+        fleet1->fatherId=fleet2->fatherId;
+    }
+    if(fleet1->size>=fleet2->size)
+    {
+        fleet1->size+=fleet2->size;
+        fleet2->father=fleet1;
+        fleet1->value->addNumOfPirate(num2);
         if(num1>=num2)
         {
-            list2->fatherId=list1->key;
-            list2->rank+=num1-list1->rank;
+            fleet2->rank+=num1;
+            fleet2->rank-=fleet1->rank;
         }
         else{
-            list1->fatherId=list2->key;
-            list2->rank+=num1;
-            list1->rank-=list2->rank;
+
+            fleet1->rank+=num2;
+            fleet2->rank-=fleet1->rank;
         }
-        list1->value->addNumOfPirate(num2);
+        
     }
+    else{
+        fleet2->size+=fleet1->size;
+        fleet1->father=fleet2;
+        fleet2->value->addNumOfPirate(num1);
+        if(num2>num1)
+        {
+            fleet1->rank+=num2;
+            fleet1->rank-=fleet2->rank;
+        }
+        else{
+            fleet2->rank+=num1;
+            fleet1->rank-=fleet2->rank;
+        }
+
+    }
+    return 0;
 }
+/*int UnionFind::Union(int key1, int key2)
+{
+    NodeHash<std::shared_ptr<fleet>>* fleet1=this->values.find(key1);
+    NodeHash<std::shared_ptr<fleet>>* fleet2=this->values.find(key2);
+    if(fleet1==nullptr || fleet2==nullptr || fleet1==fleet2)
+    {
+        return -1;
+    }
+    int num1=fleet1->value->getNumOfPirate();
+    int num2=fleet2->value->getNumOfPirate();
+    if(num1>=num2)
+    {
+        fleet1->size+=fleet2->size;
+        fleet2->father=fleet1;
+        fleet1->value->addNumOfPirate(num2);
+        fleet2->rank+=num1;
+    }
+    else{
+            fleet2->size+=fleet1->size;
+            fleet1->father=fleet2;
+             fleet2->value->addNumOfPirate(num1);
+            fleet1->rank+=num2;
+    }
+    return 0;
+}*/

@@ -23,7 +23,7 @@ StatusType oceans_t::add_fleet(int fleetId)
         {
             return StatusType::INVALID_INPUT;
         }
-        if(this->fleets->find(fleetId)!= nullptr)
+        if(this->fleets->findHash(fleetId)!= nullptr)
         {
             return StatusType::FAILURE;
         }
@@ -138,6 +138,7 @@ output_t<int> oceans_t::get_pirate_money(int pirateId)
     {
         return output_t<int>(StatusType::ALLOCATION_ERROR);
     }
+    
     static int i = 0;
     return (i++==0) ? 11 : 2;
 }
@@ -164,7 +165,10 @@ StatusType oceans_t::unite_fleets(int fleetId1, int fleetId2)
         {
             return StatusType::FAILURE;
         }
-        this->fleets->Union(fleetId1,fleetId2);
+       if( this->fleets->Union(fleetId1,fleetId2)==-1)
+       {
+            return StatusType::FAILURE;
+       }
         return StatusType::SUCCESS;
     }
     catch (const std::bad_alloc& bad)
@@ -185,6 +189,16 @@ StatusType oceans_t::pirate_argument(int pirateId1, int pirateId2)
         NodeHash<std::shared_ptr<pirate>>*pirate1=this->pirates->find(pirateId1);
         NodeHash<std::shared_ptr<pirate>>*pirate2=this->pirates->find(pirateId2);
         if(pirate1== nullptr || pirate2== nullptr)
+        {
+            return StatusType::FAILURE;
+        }
+        NodeHash<std::shared_ptr<fleet>>* fleet1=this->fleets->find(pirate1->value->getFleetId());
+        NodeHash<std::shared_ptr<fleet>>* fleet2=this->fleets->find(pirate2->value->getFleetId());
+        if(fleet1==nullptr || fleet2==nullptr)
+        {
+           return StatusType::FAILURE;   
+        }
+        if(fleet1!=fleet2)
         {
             return StatusType::FAILURE;
         }

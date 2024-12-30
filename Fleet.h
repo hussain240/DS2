@@ -15,7 +15,7 @@ public:
     int getLastRank();
     int getNumOfPirate()const;
     int getId()const;
-    void addNumOfShip();
+    void addNumOfShip(int num);
     void addNumOfPirate(int toAdd);
 };
 #endif //DS2_FLEET_H

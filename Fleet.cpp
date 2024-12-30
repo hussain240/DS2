@@ -26,6 +26,6 @@ void fleet::addNumOfPirate(int toAdd) {
     this->numOfPirate+=toAdd;
 }
 
-void fleet::addNumOfShip() {
-    this->numOfShip++;
+void fleet::addNumOfShip(int num) {
+    this->numOfShip+=num;
 }
